@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Tracker</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <h1>Invoice Tracker</h1>
+
+    <!-- Add Invoice Form -->
+    <h2>Add Invoice</h2>
+    <form action="/add" method="post">
+        <input type="text" name="customer_name" placeholder="Customer Name" required>
+        <input type="text" name="customer_address" placeholder="Customer Address" required>
+        <input type="date" name="invoice_date" required>
+        <input type="text" name="invoice_number" placeholder="Invoice Number" required>
+        <input type="text" name="description" placeholder="Description" required>
+        <input type="number" step="0.01" name="invoice_total" placeholder="Invoice Total" required>
+        <button type="submit">Add Invoice</button>
+    </form>
+
+    <!-- Invoice Table -->
+    <h2>Invoices</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>InvoiceID</th>
+                <th>Customer Name</th>
+                <th>Customer Address</th>
+                <th>Invoice Date</th>
+                <th>Invoice Number</th>
+                <th>Description</th>
+                <th>Invoice Total</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for invoice in invoices %}
+            <tr>
+                <td>{{ invoice.InvoiceID }}</td>
+                <td>{{ invoice.CustomerName }}</td>
+                <td>{{ invoice.CustomerAddress }}</td>
+                <td>{{ invoice.InvoiceDate }}</td>
+                <td>{{ invoice.InvoiceNumber }}</td>
+                <td>{{ invoice.Description }}</td>
+                <td>{{ invoice.InvoiceTotal }}</td>
+                <td class="actions">
+                    <!-- Update Button -->
+                    <button class="update" onclick="openUpdateModal('{{ invoice.InvoiceID }}', '{{ invoice.CustomerName }}', '{{ invoice.CustomerAddress }}', '{{ invoice.InvoiceDate }}', '{{ invoice.InvoiceNumber }}', '{{ invoice.Description }}', '{{ invoice.InvoiceTotal }}')">
+                        Update
+                    </button>
+
+                    <!-- Delete Invoice Form -->
+                    <form action="/delete/{{ invoice.InvoiceID }}" method="post">
+                        <button class="delete" type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Update Modal -->
+    <div class="modal" id="updateModal">
+        <div class="modal-content">
+            <h2>Update Invoice</h2>
+            <form id="updateForm" method="post">
+                <input type="text" name="customer_name" id="updateCustomerName" required>
+                <input type="text" name="customer_address" id="updateCustomerAddress" required>
+                <input type="date" name="invoice_date" id="updateInvoiceDate" required>
+                <input type="text" name="invoice_number" id="updateInvoiceNumber" required>
+                <input type="text" name="description" id="updateDescription" required>
+                <input type="number" step="0.01" name="invoice_total" id="updateInvoiceTotal" required>
+                <button type="submit">Save Changes</button>
+                <button type="button" class="close" onclick="closeUpdateModal()">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openUpdateModal(id, name, address, date, number, description, total) {
+            const modal = document.getElementById('updateModal');
+            modal.style.display = 'flex';
+            const form = document.getElementById('updateForm');
+            form.action = `/update/${id}`;
+            document.getElementById('updateCustomerName').value = name;
+            document.getElementById('updateCustomerAddress').value = address;
+            document.getElementById('updateInvoiceDate').value = date;
+            document.getElementById('updateInvoiceNumber').value = number;
+            document.getElementById('updateDescription').value = description;
+            document.getElementById('updateInvoiceTotal').value = total;
+        }
+
+        function closeUpdateModal() {
+            const modal = document.getElementById('updateModal');
+            modal.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
